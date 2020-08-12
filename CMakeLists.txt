@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(lio_sam)
 
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g -pthread")
 
 find_package(catkin REQUIRED COMPONENTS
@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenMP REQUIRED)
 find_package(PCL REQUIRED QUIET)
 find_package(OpenCV REQUIRED QUIET)
-find_package(GTSAM REQUIRED QUIET)
+find_package(GTSAM REQUIRED)
 
 add_message_files(
   DIRECTORY msg
@@ -54,19 +54,19 @@ catkin_package(
 
 # include directories
 include_directories(
-	include
-	${catkin_INCLUDE_DIRS}
-	${PCL_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-	${GTSAM_INCLUDE_DIR}
+  include
+    ${catkin_INCLUDE_DIRS}
+    ${PCL_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+    ${GTSAM_INCLUDE_DIR}
 )
 
 # link directories
 link_directories(
-	include
-	${PCL_LIBRARY_DIRS}
-  ${OpenCV_LIBRARY_DIRS}
-  ${GTSAM_LIBRARY_DIRS}
+  include
+    ${PCL_LIBRARY_DIRS}
+    ${OpenCV_LIBRARY_DIRS}
+    ${GTSAM_LIBRARY_DIRS}
 )
 
 ###########
@@ -92,3 +92,19 @@ target_link_libraries(${PROJECT_NAME}_mapOptmization ${catkin_LIBRARIES} ${PCL_L
 # IMU Preintegration
 add_executable(${PROJECT_NAME}_imuPreintegration src/imuPreintegration.cpp)
 target_link_libraries(${PROJECT_NAME}_imuPreintegration ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES} gtsam)
+
+############
+## Install ##
+#############
+
+install(
+  TARGETS 
+    ${PROJECT_NAME}_imageProjection
+    ${PROJECT_NAME}_featureExtraction
+    ${PROJECT_NAME}_mapOptmization
+    ${PROJECT_NAME}_imuPreintegration
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(DIRECTORY launch/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
+install(DIRECTORY config/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config) 
+install(DIRECTORY msg/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/msg) 
